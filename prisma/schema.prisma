@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Barbearia {
+  id   String @id @default(uuid())
+  logo String
+  nome String
+
+  @@map("barbearia")
+}
+
+model Unidade {
+  id       String     @id @default(uuid())
+  nome     String
+  endereco String
+  telefone String
+  Barbeiro Barbeiro[]
+
+  @@map("unidades")
+}
+
+model Barbeiro {
+  id                String              @id @default(uuid())
+  nome              String
+  email             String              @unique
+  senha             String
+  foto_perfil       String?
+  servicos          Servico[]
+  Agendamento       Agendamento[]
+  HorarioDisponivel HorarioDisponivel[]
+  BarbeiroServico   BarbeiroServico[]
+  unidade           Unidade             @relation(fields: [unidade_id], references: [id])
+  unidade_id        String
+
+  @@map("barbeiros")
+}
+
+enum DiaSemana {
+  DOMINGO
+  SEGUNDA
+  TERCA
+  QUARTA
+  QUINTA
+  SEXTA
+  SABADO
+
+  @@map("diasSemana")
+}
+
+model HorarioDisponivel {
+  id          String    @id @default(uuid())
+  diaSemana   DiaSemana
+  horaInicio  DateTime
+  horaFim     DateTime
+  barbeiro    Barbeiro  @relation(fields: [barbeiro_id], references: [id])
+  barbeiro_id String
+
+  @@index([barbeiro_id], name: "barbeiro_id_index")
+  @@map("horariosDisponiveis")
+}
+
+model Cliente {
+  id           String        @id @default(uuid())
+  nome         String
+  email        String        @unique
+  senha        String
+  foto_perfil  String?
+  agendamentos Agendamento[]
+
+  @@map("clientes")
+}
+
+model Servico {
+  id              Int               @id @default(autoincrement())
+  nome            String
+  descricao       String
+  preco           Float
+  barbeiros       Barbeiro[]
+  Agendamento     Agendamento[]
+  BarbeiroServico BarbeiroServico[]
+
+  @@map("servicos")
+}
+
+model BarbeiroServico {
+  barbeiro_id String
+  servico_id  Int
+
+  barbeiro Barbeiro @relation(fields: [barbeiro_id], references: [id])
+  servico  Servico  @relation(fields: [servico_id], references: [id])
+
+  @@id([barbeiro_id, servico_id])
+  @@map("barbeirosServicos")
+}
+
+model Agendamento {
+  agendamento_id Int      @id @default(autoincrement())
+  horario        DateTime
+  cliente        Cliente  @relation(fields: [cliente_id], references: [id], onDelete: Cascade)
+  cliente_id     String
+  barbeiro       Barbeiro @relation(fields: [barbeiro_id], references: [id], onDelete: Cascade)
+  barbeiro_id    String
+  servico        Servico  @relation(fields: [servico_id], references: [id], onDelete: Cascade)
+  servico_id     Int
+
+  @@map("agendamentos")
+}
