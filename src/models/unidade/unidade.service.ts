@@ -24,18 +24,9 @@ export class UnidadeService {
   }
 
   async findOne(id: string) {
-    const unidade = await this.prismaService.unidade.findUnique({
+    return this.prismaService.unidade.findUnique({
       where: { id },
     });
-
-    if (!unidade) {
-      throw this.exception.newError(
-        HttpStatus.NOT_FOUND,
-        'Unidade não encontrada',
-      );
-    }
-
-    return unidade;
   }
 
   async update(id: string, updateUnidadeDto: UpdateUnidadeDto) {
@@ -59,10 +50,14 @@ export class UnidadeService {
   }
 
   async remove(id: string) {
-    const deletedUnidade = await this.prismaService.unidade.delete({
+    const unidadeExistis = await this.findOne(id);
+
+    if (!unidadeExistis) {
+      throw this.exception.newError(HttpStatus.NOT_FOUND, 'Unidade não existe');
+    }
+
+    return this.prismaService.unidade.delete({
       where: { id },
     });
-
-    return deletedUnidade;
   }
 }

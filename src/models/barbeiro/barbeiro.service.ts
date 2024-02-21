@@ -20,6 +20,15 @@ export class BarbeiroService {
         'Email já cadastrado por outro usuário',
       );
     }
+
+    const unidade = await this.prisma.unidade.findUnique({
+      where: { id: newBarbeiro.unidade_id },
+    });
+
+    if (!unidade) {
+      throw this.exception.newError(HttpStatus.CONFLICT, 'Unidade não existe');
+    }
+
     return this.prisma.barbeiro.create({ data: newBarbeiro });
   }
 
