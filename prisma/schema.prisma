@@ -38,8 +38,8 @@ model Barbeiro {
   Agendamento       Agendamento[]
   HorarioDisponivel HorarioDisponivel[]
   BarbeiroServico   BarbeiroServico[]
-  unidade           Unidade             @relation(fields: [unidade_id], references: [id])
-  unidade_id        String
+  unidade           Unidade?            @relation(fields: [unidade_id], references: [id], onDelete: SetNull)
+  unidade_id        String?
 
   @@map("barbeiros")
 }
