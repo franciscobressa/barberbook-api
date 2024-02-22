@@ -2,8 +2,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateBarbeiroDto } from './dto/create-barbeiro.dto';
 import { UpdateBarbeiroDto } from './dto/update-barbeiro.dto';
 import { PrismaService } from 'src/database/PrismaService';
-import type { Barbeiro } from '@prisma/client';
+import type { Barbeiro, HorarioDisponivel } from '@prisma/client';
 import { ExcepetionService } from '../exception/exception.service';
+import { CreateHorarioDto } from './dto/create-horario.dto';
 @Injectable()
 export class BarbeiroService {
   constructor(
@@ -75,6 +76,62 @@ export class BarbeiroService {
   async remove(id: string): Promise<void> {
     const barbeiro = await this.findOne(id);
     await this.prisma.barbeiro.delete({ where: { id: barbeiro.id } });
+  }
+
+  async findHorarioByBarbeiro(id) {
+    return this.prisma.horarioDisponivel.findMany({
+      where: { barbeiro_id: id },
+    });
+  }
+
+  async createHorarioDisponivel(newHorario: CreateHorarioDto) {
+    if (new Date(newHorario.horaInicio) > new Date(newHorario.horaFim)) {
+      throw this.exception.newError(
+        HttpStatus.BAD_REQUEST,
+        'Horário inicial não pode ser menor do que horário final',
+      );
+    }
+
+    const horarios = await this.prisma.horarioDisponivel.findMany({
+      where: {
+        barbeiro_id: newHorario.barbeiro_id,
+        diaSemana: newHorario.diaSemana,
+      },
+    });
+
+    const conflito = this.verificaConflitoHorario(
+      horarios,
+      new Date(newHorario.horaInicio),
+      new Date(newHorario.horaFim),
+    );
+
+    if (conflito) {
+      throw this.exception.newError(HttpStatus.CONFLICT, 'Conflito de horário');
+    }
+
+    return this.prisma.horarioDisponivel.create({
+      data: { ...newHorario, horaInicio: new Date(newHorario.horaInicio) },
+    });
+  }
+
+  async removeHorarioDisponivel(id: string): Promise<void> {
+    const horario = await this.prisma.horarioDisponivel.findUnique({
+      where: { id },
+    });
+    await this.prisma.horarioDisponivel.delete({ where: { id: horario.id } });
+  }
+
+  verificaConflitoHorario(
+    horariosExistentes: HorarioDisponivel[],
+    novoHorarioInicio: Date,
+    novoHorarioFim: Date,
+  ) {
+    return horariosExistentes.some(({ horaInicio, horaFim }) => {
+      return (
+        (novoHorarioInicio >= horaInicio && novoHorarioInicio <= horaFim) ||
+        (novoHorarioFim >= horaInicio && novoHorarioFim <= horaFim)
+      );
+    });
   }
 
   async emailExists(email: string): Promise<Barbeiro | null> {

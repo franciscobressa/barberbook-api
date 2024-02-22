@@ -58,8 +58,8 @@ enum DiaSemana {
 model HorarioDisponivel {
   id          String    @id @default(uuid())
   diaSemana   DiaSemana
-  horaInicio  DateTime
-  horaFim     DateTime
+  horaInicio  DateTime  @default(now()) @db.Time(3)
+  horaFim     DateTime  @default(now()) @db.Time()
   barbeiro    Barbeiro  @relation(fields: [barbeiro_id], references: [id])
   barbeiro_id String
 
