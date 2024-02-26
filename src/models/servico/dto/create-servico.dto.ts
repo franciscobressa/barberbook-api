@@ -33,6 +33,14 @@ export class CreateServicoDto {
   preco: number;
 
   @ApiProperty({
+    example: 30,
+    description: 'Duração do Serviço',
+  })
+  @IsNotEmpty()
+  @IsNumber()
+  duracao: number;
+
+  @ApiProperty({
     example: ['aaa', 'bbb', 'ccc'],
     description: 'Array de IDs que oferecem esse serviço',
   })

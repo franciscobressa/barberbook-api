@@ -14,15 +14,15 @@ export class CreateHorarioDto {
     example: '1970-01-01T12:00:00.000Z',
     description: 'Horário de Início',
   })
-  // @IsNotEmpty()
-  horaInicio: string;
+  @IsNotEmpty()
+  horaInicio: Date;
 
   @ApiProperty({
     example: '1970-01-01T16:00:00.000Z',
     description: 'Horário de Fim',
   })
-  // @IsNotEmpty()
-  horaFim: string;
+  @IsNotEmpty()
+  horaFim: Date;
 
   @ApiProperty({
     example: 'f4ec1d2a-a6ba-4b55-ba2a-b3f9bed08d12',

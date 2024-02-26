@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateBarbeiroDto } from './dto/create-barbeiro.dto';
 import { UpdateBarbeiroDto } from './dto/update-barbeiro.dto';
 import { PrismaService } from 'src/database/PrismaService';
-import type { Barbeiro, HorarioDisponivel } from '@prisma/client';
+import type { Barbeiro, DiaSemana, HorarioDisponivel } from '@prisma/client';
 import { ExcepetionService } from '../exception/exception.service';
 import { CreateHorarioDto } from './dto/create-horario.dto';
 @Injectable()
@@ -78,9 +78,15 @@ export class BarbeiroService {
     await this.prisma.barbeiro.delete({ where: { id: barbeiro.id } });
   }
 
-  async findHorarioByBarbeiro(id) {
+  async findHorarioByBarbeiro(id: string) {
     return this.prisma.horarioDisponivel.findMany({
       where: { barbeiro_id: id },
+    });
+  }
+
+  async findHorarioByBarbeiroAndDay(id: string, diaSemana: DiaSemana) {
+    return this.prisma.horarioDisponivel.findMany({
+      where: { barbeiro_id: id, diaSemana: diaSemana },
     });
   }
 

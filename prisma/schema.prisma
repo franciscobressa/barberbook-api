@@ -83,6 +83,7 @@ model Servico {
   nome        String
   descricao   String
   preco       Float
+  duracao     Int           @default(30)
   barbeiros   Barbeiro[]
   Agendamento Agendamento[]
 
@@ -91,7 +92,8 @@ model Servico {
 
 model Agendamento {
   agendamento_id Int      @id @default(autoincrement())
-  horario        DateTime
+  horario_inicio DateTime
+  horario_fim    DateTime
   cliente        Cliente  @relation(fields: [cliente_id], references: [id], onDelete: Cascade)
   cliente_id     String
   barbeiro       Barbeiro @relation(fields: [barbeiro_id], references: [id], onDelete: Cascade)

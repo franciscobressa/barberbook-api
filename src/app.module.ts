@@ -4,8 +4,10 @@ import { UnidadeModule } from './models/unidade/unidade.module';
 import { BarbeariaModule } from './models/barbearia/barbearia.module';
 import { ClienteModule } from './models/cliente/cliente.module';
 import { ServicoModule } from './models/servico/servico.module';
+import { AgendamentoModule } from './models/agendamento/agendamento.module';
 @Module({
   imports: [
+    AgendamentoModule,
     BarbeariaModule,
     BarbeiroModule,
     ClienteModule,
