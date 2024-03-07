@@ -5,6 +5,7 @@ import { BarbeariaModule } from './models/barbearia/barbearia.module';
 import { ClienteModule } from './models/cliente/cliente.module';
 import { ServicoModule } from './models/servico/servico.module';
 import { AgendamentoModule } from './models/agendamento/agendamento.module';
+import { AuthModule } from './models/auth/auth.module';
 @Module({
   imports: [
     AgendamentoModule,
@@ -13,6 +14,7 @@ import { AgendamentoModule } from './models/agendamento/agendamento.module';
     ClienteModule,
     ServicoModule,
     UnidadeModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

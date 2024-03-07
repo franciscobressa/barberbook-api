@@ -5,6 +5,7 @@ import { PrismaService } from 'src/database/PrismaService';
 import type { Barbeiro, DiaSemana, HorarioDisponivel } from '@prisma/client';
 import { ExcepetionService } from '../exception/exception.service';
 import { CreateHorarioDto } from './dto/create-horario.dto';
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class BarbeiroService {
   constructor(
@@ -30,7 +31,16 @@ export class BarbeiroService {
       throw this.exception.newError(HttpStatus.CONFLICT, 'Unidade não existe');
     }
 
-    return this.prisma.barbeiro.create({ data: newBarbeiro });
+    newBarbeiro.senha = await bcrypt.hash(newBarbeiro.senha, 5);
+
+    const createdUser = await this.prisma.barbeiro.create({
+      data: newBarbeiro,
+    });
+
+    return {
+      ...createdUser,
+      senha: undefined,
+    };
   }
 
   async findAll(): Promise<Barbeiro[]> {
